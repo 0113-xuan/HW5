@@ -6,7 +6,7 @@
 {
     <label for="guess">請輸入你的猜測：</label>
     <input type="text" id="guess" name="Guess" value="@Model.Guess" />
-    <input type="submit" value="猜！" />
+    <input type="submit" class="btn btn-secondary" value="猜！" />
 }
 @if(!string.IsNullOrEmpty(Model.Store))
 {
@@ -17,5 +17,11 @@
 {
     <p>猜測結果：@Model.Result</p>
     <p>你已經猜測 @Model.GuessCount 次</p>
-    <p>@Model.Secret</p>
+}
+@if(!string.IsNullOrEmpty(Model.GameOverMessage))
+{
+    <h3>@Model.GameOverMessage</h3>
+    <form asp-action="Restart" asp-controller="Game" method="post">
+        <input type="submit" class="btn btn-outline-secondary" value="重新開始" />
+    </form>
 }

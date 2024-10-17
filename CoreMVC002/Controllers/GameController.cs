@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using CoreMVC002.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,7 @@ namespace CoreMVC002.Controllers
         public ActionResult Index()
         {
             // 初始化秘密數字
-            string secretNumber = GenerateSecretNumber();
+            string secretNumber = GenerateRandomNumberString();
 
             // 傳遞到 View 內部後再回到 Controller
             TempData["secretNumber"] = secretNumber;
@@ -68,16 +69,31 @@ namespace CoreMVC002.Controllers
 
             //將猜測記錄加入模型中
             model.Store = guessHistory;
+
+            //判斷是否猜對
+            model.IsCorrect = model.IsGameOver(model.Guess);
+
             TempData.Keep("secretNumber");
             return View("Index", model);
         }
 
         // ------ 遊戲相關之邏輯 ------
-        private string GenerateSecretNumber()
+        private string GenerateRandomNumberString()
         {
-            // 生成一個隨機的4位數字作為秘密數字
-            // 你可以根據需要自定義生成規則
-            return "1234";
+            Random random = new Random();
+
+            // 使用 HashSet 來確保生成的數字不重複
+            HashSet<int> digits = new HashSet<int>();
+
+            // 生成 4 個不重複的隨機數字
+            while (digits.Count < 4)
+            {
+                int digit = random.Next(0, 10); // 在 0 到 9 之間生成一個隨機數字
+                digits.Add(digit); // 將生成的數字添加到 HashSet 中，如果重複則不會添加
+            }
+
+            // 將 HashSet 中的數字轉換為字符串並返回
+            return string.Join("", digits);
         }
         [HttpPost]
         public ActionResult Restart()
